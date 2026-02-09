@@ -61,7 +61,9 @@ public class Main {
         //1. Load models from classpath
         Set<YangModuleInfo> toasterModules = ModelUtils.getModelsFromClasspath(
             ModuleId.from(
-                "http://netconfcentral.org/ns/toaster", "toaster", "2009-11-20"));
+                "http://netconfcentral.org/ns/toaster", "toaster", "2009-11-20"),
+            ModuleId.from(
+                "urn:ietf:params:xml:ns:netconf:base:1.0", "ietf-netconf", "2011-06-01"));
 
         //2. Initialize RPCs
         ToasterServiceImpl toasterService = new ToasterServiceImpl();
