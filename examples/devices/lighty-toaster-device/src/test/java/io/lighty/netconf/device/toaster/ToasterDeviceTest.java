@@ -201,6 +201,36 @@ public class ToasterDeviceTest {
         }
     }
 
+    @Test
+    public void testIetfNetconfSchemaPresence() throws Exception {
+
+        final SimpleNetconfClientSessionListener sessionListener = new SimpleNetconfClientSessionListener();
+
+        try (NetconfClientSession session =
+            dispatcher.createClient(createSHHConfig(sessionListener))
+                .get(TimeoutUtil.TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
+
+            final NetconfMessage schemaResponse = sentRequestToDevice(GET_SCHEMAS_REQUEST_XML,
+                sessionListener);
+            final NodeList schema = schemaResponse.getDocument().getDocumentElement().getElementsByTagName("schema");
+            assertTrue(schema.getLength() > 0);
+
+            boolean ietfNetconfContained = false;
+            for (int i = 0; i < schema.getLength(); i++) {
+                if (schema.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                    final Element item = (Element) schema.item(i);
+                    final String schemaName = item.getElementsByTagName("identifier").item(0).getTextContent();
+                    if ("ietf-netconf".equals(schemaName)) {
+                        ietfNetconfContained = true;
+                        break;
+                    }
+                }
+            }
+
+            assertTrue(ietfNetconfContained, "Device MUST support and advertise 'ietf-netconf'");
+        }
+    }
+
     private boolean containsOkElement(final NetconfMessage responseMessage) {
         return responseMessage.getDocument().getElementsByTagName("ok").getLength() > 0;
     }
