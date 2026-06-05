@@ -42,7 +42,8 @@ import org.opendaylight.yangtools.yang.model.api.EffectiveModelContext;
 import org.opendaylight.yangtools.yang.model.util.SchemaInferenceStack;
 import org.opendaylight.yangtools.yang.model.util.SchemaInferenceStack.Inference;
 import org.opendaylight.yangtools.yang.parser.api.YangParserFactory;
-import org.opendaylight.yangtools.yang.parser.impl.DefaultYangParserFactory;
+import org.opendaylight.yangtools.yang.parser.ri.DefaultYangParserFactory;
+import org.opendaylight.yangtools.yang.source.ir.DefaultYangTextToIRSourceTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,7 +147,8 @@ public class NetconfDeviceServicesImpl implements NetconfDeviceServices {
     private AdapterContext createAdapterContext(Collection<YangModuleInfo> moduleInfos) {
         final YangParserFactory yangParserFactory = new DefaultYangParserFactory();
         ModuleInfoSnapshotResolver snapshotResolver
-                = new ModuleInfoSnapshotResolver("netconf-simulator", yangParserFactory);
+                = new ModuleInfoSnapshotResolver("netconf-simulator", new DefaultYangTextToIRSourceTransformer(),
+            yangParserFactory);
         snapshotResolver.registerModuleInfos(moduleInfos);
         ModuleInfoSnapshot moduleInfoSnapshot = snapshotResolver.takeSnapshot();
 
