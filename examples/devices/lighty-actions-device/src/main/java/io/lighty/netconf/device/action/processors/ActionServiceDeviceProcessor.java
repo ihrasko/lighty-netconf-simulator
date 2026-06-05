@@ -214,7 +214,7 @@ public class ActionServiceDeviceProcessor extends BaseRequestProcessor {
         if (dataSchemaNode instanceof ActionNodeContainer) {
             for (ActionDefinition actionDefinition : ((ActionNodeContainer) dataSchemaNode).getActions()) {
                 path.addLast(actionDefinition.getQName());
-                builder.put(Absolute.of(path), actionDefinition);
+                builder.put(Absolute.of(List.copyOf(path)), actionDefinition);
                 path.removeLast();
             }
         }
