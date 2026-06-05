@@ -34,6 +34,7 @@ import org.opendaylight.netconf.client.conf.NetconfClientConfiguration;
 import org.opendaylight.netconf.client.conf.NetconfClientConfigurationBuilder;
 import org.opendaylight.netconf.common.di.DefaultNetconfTimer;
 import org.opendaylight.netconf.transport.api.UnsupportedConfigurationException;
+import org.opendaylight.netconf.transport.ssh.SSHNegotiatedAlgListener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.crypto.types.rev241010.password.grouping.password.type.CleartextPasswordBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Host;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
@@ -61,6 +62,9 @@ public class ActionDeviceTest {
     public static final String RESET_ACTION_REQUEST_XML = "reset_action_request.xml";
     public static final String START_TAG = "start-finished-at";
     public static final String RESET_TAG = "reset-finished-at";
+    private static final SSHNegotiatedAlgListener ALG_LISTENER = (kexAlgorithm, hostKey, encryption, mac) -> {
+        // No-op
+    };
 
     private static Main deviceSimulator;
     private static NetconfClientFactoryImpl dispatcher;
@@ -103,7 +107,7 @@ public class ActionDeviceTest {
         final SimpleNetconfClientSessionListener sessionListener = new SimpleNetconfClientSessionListener();
 
         try (NetconfClientSession session =
-                dispatcher.createClient(createSHHConfig(sessionListener))
+                dispatcher.createClient(createSHHConfig(sessionListener), ALG_LISTENER)
                         .get(TimeoutUtil.TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
             final NetconfMessage schemaResponse = sentRequesttoDevice(
                     sessionListener, "get_schemas_request.xml");
@@ -133,7 +137,7 @@ public class ActionDeviceTest {
             ExecutionException, TimeoutException, UnsupportedConfigurationException {
         final SimpleNetconfClientSessionListener sessionListener = new SimpleNetconfClientSessionListener();
         try (NetconfClientSession session =
-                dispatcher.createClient(createSHHConfig(sessionListener))
+                dispatcher.createClient(createSHHConfig(sessionListener), ALG_LISTENER)
                         .get(TimeoutUtil.TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
             final NetconfMessage startActionResponse = sentRequesttoDevice(sessionListener, START_ACTION_REQUEST_XML);
             final String startResultTag = startActionResponse.getDocument().getDocumentElement().getElementsByTagName(

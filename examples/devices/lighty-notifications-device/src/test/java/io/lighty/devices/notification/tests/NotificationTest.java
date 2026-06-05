@@ -36,6 +36,7 @@ import org.opendaylight.netconf.client.conf.NetconfClientConfiguration;
 import org.opendaylight.netconf.client.conf.NetconfClientConfigurationBuilder;
 import org.opendaylight.netconf.common.di.DefaultNetconfTimer;
 import org.opendaylight.netconf.transport.api.UnsupportedConfigurationException;
+import org.opendaylight.netconf.transport.ssh.SSHNegotiatedAlgListener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.crypto.types.rev241010.password.grouping.password.type.CleartextPasswordBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Host;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
@@ -62,6 +63,9 @@ public class NotificationTest {
     private static final String SUBSCRIBE_MSG_TAG = "m-2";
     private static final String EXPECTED_NOTIFICATION_PAYLOAD = "Test Notification";
     private static final String GET_SCHEMAS_REQUEST_XML = "get_schemas_request.xml";
+    private static final SSHNegotiatedAlgListener ALG_LISTENER = (kexAlgorithm, hostKey, encryption, mac) -> {
+        // No-op
+    };
     private static Main deviceSimulator;
     private static NetconfClientFactory dispatcher;
 
@@ -108,7 +112,7 @@ public class NotificationTest {
         final SimpleNetconfClientSessionListener sessionListener = new SimpleNetconfClientSessionListener();
 
         try (NetconfClientSession session =
-                dispatcher.createClient(createSHHConfig(sessionListener))
+                dispatcher.createClient(createSHHConfig(sessionListener), ALG_LISTENER)
                         .get(TimeoutUtil.TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
             final NetconfMessage schemaResponse = sendRequesttoDevice(sessionListener, GET_SCHEMAS_REQUEST_XML);
 
@@ -141,7 +145,7 @@ public class NotificationTest {
                 new NotificationNetconfSessionListener(countDownLatch, EXPECTED_NOTIFICATION_PAYLOAD);
 
         try (NetconfClientSession session =
-                dispatcher.createClient(createSHHConfig(sessionListener))
+                dispatcher.createClient(createSHHConfig(sessionListener), ALG_LISTENER)
                         .get(TimeoutUtil.TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
             final NetconfMessage subscribeResponse =
                     sendRequesttoDevice(sessionListener, SUBCRIBE_TO_NOTIFICATIONS_REQUEST_XML);
