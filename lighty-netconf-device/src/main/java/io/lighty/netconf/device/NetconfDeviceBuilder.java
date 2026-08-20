@@ -133,7 +133,7 @@ public class NetconfDeviceBuilder {
         //  Created issue for it https://jira.opendaylight.org/browse/NETCONF-754 so keep checking on it.
         YangModuleInfo netconfNotificationModel =
                 org.opendaylight.yang.svc.v1.urn.ietf.params.xml.ns.netconf
-                        .notification._1._0.rev080714.YangModuleInfoImpl.getInstance();
+                        .notification._1._0.rev080714.YangModuleInfoImpl.INSTANCE;
         this.moduleInfos.add(netconfNotificationModel);
         this.withRequestProcessor(new CreateSubscriptionRequestProcessor());
         this.creator = new NotificationPublishServiceImpl();
@@ -179,7 +179,7 @@ public class NetconfDeviceBuilder {
         if (netconfMonitoringEnabled) {
             YangModuleInfo netconfMonitoringModule =
                 org.opendaylight.yang.svc.v1.urn.ietf.params.xml.ns.yang.ietf.netconf.monitoring
-                    .rev101004.YangModuleInfoImpl.getInstance();
+                    .rev101004.YangModuleInfoImpl.INSTANCE;
             this.moduleInfos.add(netconfMonitoringModule);
         }
         this.configurationBuilder.setGetDefaultYangResources(Collections.emptySet());
